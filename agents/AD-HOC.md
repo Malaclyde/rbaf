@@ -1,0 +1,4 @@
+-> powerful agent for ad-hoc queries:
+- quick research
+- quick changes
+- bugfixes

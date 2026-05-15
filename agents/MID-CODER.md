@@ -1,0 +1,2 @@
+-> less powerful agent that writes code based on the implementation plan
+-> also tester (can be tasked with implementing or verifying a step - in separate sessions with clean context)

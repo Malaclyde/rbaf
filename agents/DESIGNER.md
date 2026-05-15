@@ -1,0 +1,1 @@
+-> an agent that has guidelines from the google's design.md system to create an accurate design.md file

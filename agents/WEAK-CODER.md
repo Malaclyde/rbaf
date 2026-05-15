@@ -1,0 +1,3 @@
+-> powered by a free model
+-> not as smart as the mid-coder
+-> can handle simple coding / testing tasks that are *NOT LONG* and *NOT IMPORTANT*
