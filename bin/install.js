@@ -7,61 +7,13 @@ const os = require('os');
 const { existsSync, mkdirSync, readFileSync, writeFileSync, readdirSync, copyFileSync } = fs;
 
 const AGENTS = [
-  {
-    file: 'TEAM_LEAD.md',
-    mode: 'primary',
-    description: 'Orchestrates development \u2014 spawns subagents, manages workflow, and drives project sessions',
-  },
-  {
-    file: 'PLANNER.md',
-    mode: 'subagent',
-    description: 'Creates plans, defines requirements, organizes work into sprints, and produces task breakdowns',
-  },
-  {
-    file: 'RESEARCHER.md',
-    mode: 'subagent',
-    description: 'Deep research, debugging, project initialization, and technical discussions',
-  },
-  {
-    file: 'IMPLEMENTATION_SPEC.md',
-    mode: 'subagent',
-    description: 'Writes detailed implementation specifications from sprint plans',
-  },
-  {
-    file: 'MID-CODER.md',
-    mode: 'subagent',
-    description: 'Implements complex tasks from specifications with tests and verification',
-  },
-  {
-    file: 'WEAK-CODER.md',
-    mode: 'subagent',
-    description: 'Implements simple, well-defined tasks from specifications',
-  },
-  {
-    file: 'VERIFIER.md',
-    mode: 'subagent',
-    description: 'Independent verification and code review against specifications',
-  },
-  {
-    file: 'DESIGNER.md',
-    mode: 'subagent',
-    description: 'Creates UI design specifications following Google\'s DESIGN.md format',
-  },
-  {
-    file: 'AD-HOC.md',
-    mode: 'subagent',
-    description: 'Generalist problem solver for quick changes, bugfixes, and unforeseen tasks',
-  },
-  {
-    file: 'UTILITY.md',
-    mode: 'subagent',
-    description: 'Project maintenance \u2014 updates planning files, documentation, and changelogs',
-  },
+  'TEAM_LEAD.md', 'PLANNER.md', 'RESEARCHER.md', 'IMPLEMENTATION_SPEC.md',
+  'MID-CODER.md', 'WEAK-CODER.md', 'VERIFIER.md', 'DESIGNER.md',
+  'GIT.md', 'AD-HOC.md', 'UTILITY.md',
 ];
 
 const COMMANDS = [
-  'plan.md', 'init.md', 'git-commit.md', 'git-pr.md',
-  'docs-update.md', 'status-update.md', 'worktree-create.md', 'worktree-finish.md',
+  'plan.md', 'init.md', 'discuss.md',
 ];
 
 const REPO_ROOT = path.resolve(__dirname, '..');
@@ -138,10 +90,10 @@ function validateSources() {
     errors.push(`commands directory not found: ${SOURCE_COMMANDS_DIR}`);
   }
 
-  for (const agent of AGENTS) {
-    const p = path.join(SOURCE_AGENTS_DIR, agent.file);
+  for (const agentFile of AGENTS) {
+    const p = path.join(SOURCE_AGENTS_DIR, agentFile);
     if (!existsSync(p)) {
-      errors.push(`agent file not found: ${agent.file}`);
+      errors.push(`agent file not found: ${agentFile}`);
     }
   }
 
@@ -153,14 +105,6 @@ function validateSources() {
   }
 
   return errors;
-}
-
-function generateAgentFrontmatter(description, mode) {
-  return `---
-description: ${description}
-mode: ${mode}
----
-`;
 }
 
 function readFileSafe(filePath) {
@@ -197,9 +141,9 @@ function copyCommand(src, dest, dryRun, force, ops) {
   ops.push({ type: 'copy', file: path.relative(process.cwd(), dest) });
 }
 
-function installAgent(agent, targetDir, dryRun, force, ops) {
-  const src = path.join(SOURCE_AGENTS_DIR, agent.file);
-  const dest = path.join(targetDir, 'agents', agent.file);
+function installAgent(agentFile, targetDir, dryRun, force, ops) {
+  const src = path.join(SOURCE_AGENTS_DIR, agentFile);
+  const dest = path.join(targetDir, 'agents', agentFile);
 
   if (existsSync(dest) && !force) {
     ops.push({ type: 'skip', reason: 'exists', file: path.relative(process.cwd(), dest) });
@@ -212,11 +156,8 @@ function installAgent(agent, targetDir, dryRun, force, ops) {
     return;
   }
 
-  const frontmatter = generateAgentFrontmatter(agent.description, agent.mode);
-  const result = frontmatter + content;
-
   if (!dryRun) {
-    writeFileSafe(dest, result);
+    writeFileSafe(dest, content);
   }
   ops.push({ type: 'copy', file: path.relative(process.cwd(), dest) });
 }
@@ -262,7 +203,7 @@ function main() {
   const mode = flags.global ? 'global' : 'local';
   const targetDir = getTargetDir(flags.global);
 
-  console.log(`opencode-agent-framework installer\n`);
+  console.log(`  Research Based Agentic Framework installer\n`);
   console.log(`  source: ${REPO_ROOT}`);
   console.log(`  mode: ${mode}`);
 
@@ -286,8 +227,8 @@ function main() {
     copyCommand(src, dest, flags.dryRun, flags.force, ops);
   }
 
-  for (const agent of AGENTS) {
-    installAgent(agent, targetDir, flags.dryRun, flags.force, ops);
+  for (const agentFile of AGENTS) {
+    installAgent(agentFile, targetDir, flags.dryRun, flags.force, ops);
   }
 
   printSummary(ops, targetDir);

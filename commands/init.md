@@ -66,7 +66,7 @@ Follow these steps in order:
 
    After the discussion, you should clearly agree on: overall goal, project type, components, and high-level design view.
 
-**3. Create structure** — Based on everything gathered, create the project structure using the layout defined in the standard project structure section below. This includes `AGENTS.md` at the project root (see agents.md template), all `.docs/` files, `.planning/` with `settings.json`, and `.opencode/` directory skeleton. Reason about whether the standard layout fits this project — smaller projects may need less, larger projects may need more. Document the chosen structure in `.docs/project-structure.md` so future agents know the conventions. After creating the structure, delete the temporary discussion file — all its content has been transferred to the project files. Write a summary of the project's structure conventions to `.docs/project-structure.md` — capturing what was actually decided for this project, not a copy of the standard template.
+**3. Create structure** — Based on everything gathered, create the project structure using the layout defined in the standard project structure section below. This includes `AGENTS.md` at the project root (see agents.md template), all `.docs/` files, `.planning/` with `settings.json`. Reason about whether the standard layout fits this project — smaller projects may need less, larger projects may need more. Document the chosen structure in `.docs/project-structure.md` so future agents know the conventions. After creating the structure, delete the temporary discussion file — all its content has been transferred to the project files. Write a summary of the project's structure conventions to `.docs/project-structure.md` — capturing what was actually decided for this project, not a copy of the standard template.
 
 **4. Git capability detection** — After the project structure exists, detect the git environment:
 
@@ -819,31 +819,22 @@ If `opencode.json` already exists (user had pre-existing configuration), merge t
   "$schema": "https://opencode.ai/config.json",
   "agent": {
     "team-lead": {
-      "description": "Orchestrates the development team, delegates work to sub-agents, and tracks project progress.",
-      "mode": "primary",
       "model": "$POWERFUL_MODEL",
       "prompt": "{file:.opencode/agents/TEAM_LEAD.md}"
     },
     "researcher": {
-      "description": "Deep research and user discussions. Handles project initialization, technology research, and debugging investigations.",
-      "mode": "primary",
       "model": "$POWERFUL_MODEL",
       "prompt": "{file:.opencode/agents/RESEARCHER.md}"
     },
     "planner": {
-      "description": "Creates tasks, requirements, milestones, and sprint plans from project vision and documentation.",
-      "mode": "subagent",
       "model": "$POWERFUL_MODEL",
       "prompt": "{file:.opencode/agents/PLANNER.md}",
       "hidden": true,
       "permission": {
-        "bash": "deny",
         "task": "deny"
       }
     },
     "implementation-spec": {
-      "description": "Writes implementation specifications based on requirements, splitting work into mid-coder and weak-coder tasks.",
-      "mode": "subagent",
       "model": "$MID_MODEL",
       "prompt": "{file:.opencode/agents/IMPLEMENTATION_SPEC.md}",
       "hidden": true,
@@ -852,8 +843,6 @@ If `opencode.json` already exists (user had pre-existing configuration), merge t
       }
     },
     "mid-coder": {
-      "description": "Implements larger, more important coding tasks based on implementation plans.",
-      "mode": "subagent",
       "model": "$MID_MODEL",
       "prompt": "{file:.opencode/agents/MID-CODER.md}",
       "hidden": true,
@@ -862,8 +851,6 @@ If `opencode.json` already exists (user had pre-existing configuration), merge t
       }
     },
     "weak-coder": {
-      "description": "Implements small, simple, non-critical coding tasks that follow clear instructions.",
-      "mode": "subagent",
       "model": "$WEAK_MODEL",
       "prompt": "{file:.opencode/agents/WEAK-CODER.md}",
       "hidden": true,
@@ -872,8 +859,6 @@ If `opencode.json` already exists (user had pre-existing configuration), merge t
       }
     },
     "verifier": {
-      "description": "Verifies completed work matches the definition of done through independent review.",
-      "mode": "subagent",
       "model": "$POWERFUL_MODEL",
       "prompt": "{file:.opencode/agents/VERIFIER.md}",
       "hidden": true,
@@ -884,8 +869,6 @@ If `opencode.json` already exists (user had pre-existing configuration), merge t
       }
     },
     "utility": {
-      "description": "Updates planning files and documentation after tasks complete.",
-      "mode": "subagent",
       "model": "$WEAK_MODEL",
       "prompt": "{file:.opencode/agents/UTILITY.md}",
       "hidden": true,
@@ -895,8 +878,6 @@ If `opencode.json` already exists (user had pre-existing configuration), merge t
       }
     },
     "git": {
-      "description": "Handles git operations: worktrees, commits, branches, pull requests.",
-      "mode": "subagent",
       "model": "$WEAK_MODEL",
       "prompt": "{file:.opencode/agents/GIT.md}",
       "hidden": true,
@@ -907,8 +888,6 @@ If `opencode.json` already exists (user had pre-existing configuration), merge t
       }
     },
     "designer": {
-      "description": "Handles UI design tasks and creates design specification files.",
-      "mode": "subagent",
       "model": "$MID_MODEL",
       "prompt": "{file:.opencode/agents/DESIGNER.md}",
       "hidden": true,
@@ -918,8 +897,6 @@ If `opencode.json` already exists (user had pre-existing configuration), merge t
       }
     },
     "ad-hoc": {
-      "description": "Handles quick changes, bugfixes, and ad-hoc queries that don't fit other agent roles.",
-      "mode": "subagent",
       "model": "$MID_MODEL",
       "prompt": "{file:.opencode/agents/AD-HOC.md}",
       "hidden": true

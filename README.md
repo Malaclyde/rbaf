@@ -1,18 +1,18 @@
-# Agentic Coding Framework
+# Research Based Agentic Framework (RBAF)
 
-A behavioral framework for OpenCode that defines how AI agents plan, implement, verify, and maintain software projects through a structured agent hierarchy and development lifecycle.
+A behavioral framework for OpenCode that defines how AI agents research, plan, implement, verify, and maintain software projects through a structured agent hierarchy and development lifecycle.
 
 ## Installation
 
 ```bash
 # Local install (current project's .opencode/)
-npx -y github:<user>/<repo>
+npx -y github:Malaclyde/rbaf
 
 # Global install (~/.config/opencode/)
-npx -y github:<user>/<repo> --global
+npx -y github:Malaclyde/rbaf --global
 ```
 
-Installs 10 agent definitions and 8 slash commands into your OpenCode configuration. Safe to re-run -- existing files are not overwritten unless `--force` is passed.
+Installs 11 agent definitions and 3 slash commands into your OpenCode configuration. Safe to re-run -- existing files are not overwritten unless `--force` is passed.
 
 ## What You Get
 
@@ -28,6 +28,7 @@ Installs 10 agent definitions and 8 slash commands into your OpenCode configurat
 | `WEAK-CODER` | subagent | Implements simple, well-defined tasks from specifications |
 | `VERIFIER` | subagent | Independent verification and code review against specifications |
 | `DESIGNER` | subagent | Creates UI design specifications (Google DESIGN.md format) |
+| `GIT` | subagent | Git operations -- worktrees, commits, branches, pull requests |
 | `AD-HOC` | subagent | Generalist problem solver -- quick changes, bugfixes, unforeseen tasks |
 | `UTILITY` | subagent | Project maintenance -- planning files, documentation, changelogs |
 
@@ -37,12 +38,7 @@ Installs 10 agent definitions and 8 slash commands into your OpenCode configurat
 |---------|-------|---------|
 | `/init` | researcher | Initialize project structure and agent configuration |
 | `/plan` | planner | Create next sprint or phase with task breakdown |
-| `/git-commit` | utility | Commit changes following conventional commits |
-| `/git-pr` | utility | Create pull request via `gh` CLI |
-| `/docs-update` | utility | Update project documentation |
-| `/status-update` | utility | Update planning files with completed work |
-| `/worktree-create` | utility | Create isolated git worktree for a task |
-| `/worktree-finish` | utility | Merge worktree branch and clean up |
+| `/discuss` | researcher | Research and discuss a design decision |
 
 ## How It Works
 
@@ -60,13 +56,13 @@ Planning phase ─── Planner creates sprints with phases of tasks
     ▼
 Task execution ─── Team Lead orchestrates:
     │   1. Implementation Spec → detailed spec from task
-    │   2. Coder (mid or weak) → implement in git worktree
-    │   3. Verifier (if strict mode) → independent review
+    │   2. Coder (mid or weak) → implement on branch
+    │   3. Verifier (if strict) or coder (if auto) → verify
     │   4. Utility → update docs and status
-    │   5. Git → merge worktree
+    │   5. Git → commit, merge, clean up branch
     │
     ▼
-Debugging ─── If verification fails → Researcher investigates
+Debugging ─── If implementation fails → Researcher investigates
     │         → fix via Ad-Hoc or amend plan via Planner
     ▼
 Next sprint
@@ -81,6 +77,10 @@ Each task runs in an isolated git worktree. The main context window stays small 
 | `mode` | `human-in-the-loop` / `autonomous` | Whether the user is involved in decisions |
 | `verification` | `skip` / `auto` / `strict` | How implementations are verified |
 | `max_parallel_tasks` | number | Maximum concurrent task executions |
+| `git.remote_configured` | boolean | Whether the repo has a remote configured |
+| `git.gh_cli_available` | boolean | Whether the `gh` CLI is installed |
+| `git.main_protected` | boolean | Whether main branch is protected from direct pushes |
+| `git.use_pr` | boolean | Preference for PRs vs direct merge |
 
 ## Philosophy
 
