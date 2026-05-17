@@ -7,26 +7,26 @@ agent: planner
 
 {{$ARGUMENTS}}
 
-Read the project state and create a plan. Discuss the plan with the user before committing to it.
+Read project state, create plan. Discuss with user before committing.
 
 ## Steps
 
-1. If context was provided with the command (text above), use it as a starting point for what to plan. It may suggest a direction like "the next sprint" or a constraint like "prioritize security." Validate this context against what you find — it may be incomplete or outdated.
+1. If context provided with command (text above): use as starting point. May suggest direction like "next sprint" or constraint like "prioritize security." Validate against what you find — context may be incomplete or outdated.
 
-2. Read the planning files and documentation — understand what logical units exist, their status, and the project's architecture and goals. Discover what the project calls its work units rather than assuming a term.
+2. Read planning files and docs — understand logical units, status, architecture, goals. Discover what project calls work units rather than assuming term.
 
-3. Read the project conventions — understand the structure of planning files, naming conventions, and how tasks are organized.
+3. Read project conventions — structure of planning files, naming, task organization.
 
-4. Determine what needs to be planned next based on both the provided context and what the files show. Examples of what you may need to create:
-   - Initial plan if no units exist yet
-   - The next unit after the current one finishes
-   - A bugfix requirement to be added to the current unit
-   - A discussion requirement when design decisions need amendment
+4. Determine what needs planned next based on context and files. Examples:
+   - Initial plan if no units exist
+   - Next unit after current finishes
+   - Bugfix requirement for current unit
+   - Discussion requirement when design decisions need amendment
 
-5. Present your findings and proposed plan for discussion. Include:
-   - The current project state (what is done, what is pending)
-   - The proposed structure using the project's own terminology
-   - Task breakdown with complexity tiers (which tasks suit a weaker model, which need a stronger one)
+5. Present findings and proposed plan for discussion. Include:
+   - Current project state (done, pending)
+   - Proposed structure using project's own terminology
+   - Task breakdown with complexity tiers (which tasks suit weaker model, which need stronger)
    - Dependencies and parallelization opportunities
 
-6. Incorporate feedback and finalize the plan.
+6. Incorporate feedback, finalize plan.
