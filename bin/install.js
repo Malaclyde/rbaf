@@ -4,21 +4,19 @@ const fs = require('fs');
 const path = require('path');
 const os = require('os');
 
-const { existsSync, mkdirSync, readFileSync, writeFileSync, readdirSync, copyFileSync } = fs;
+const { existsSync, mkdirSync, readFileSync, writeFileSync, readdirSync, copyFileSync, statSync } = fs;
 
 const AGENTS = [
   'TEAM_LEAD.md', 'PLANNER.md', 'RESEARCHER.md', 'IMPLEMENTATION_SPEC.md',
-  'MID-CODER.md', 'WEAK-CODER.md', 'VERIFIER.md', 'DESIGNER.md',
+  'CODER.md', 'VERIFIER.md', 'DESIGNER.md',
   'GIT.md', 'AD-HOC.md', 'UTILITY.md',
 ];
 
 const COMMANDS = [
-  'plan.md', 'init.md', 'discuss.md',
+  'plan.md', 'init.md', 'research.md', 'discuss.md', 'design.md',
 ];
 
 const REPO_ROOT = path.resolve(__dirname, '..');
-const SOURCE_AGENTS_DIR = path.join(REPO_ROOT, 'agents');
-const SOURCE_COMMANDS_DIR = path.join(REPO_ROOT, 'commands');
 
 function getGlobalDir() {
   const xdg = process.env.XDG_CONFIG_HOME;
@@ -80,25 +78,43 @@ function printHelp() {
 `);
 }
 
-function validateSources() {
+function promptProjectType() {
+  return new Promise((resolve) => {
+    const rl = require('readline').createInterface({
+      input: process.stdin,
+      output: process.stdout
+    });
+    console.log('');
+    console.log('Project type:');
+    console.log('  1) Brownfield  — existing project, unknown structure (agents discover conventions)');
+    console.log('  2) Greenfield  — new project, standard structure (agents know layout)');
+    console.log('');
+    rl.question('  Which type? [1/2]: ', (answer) => {
+      rl.close();
+      resolve(answer.trim() === '2' ? 'greenfield' : 'brownfield');
+    });
+  });
+}
+
+function validateSources(sourceAgentsDir, sourceCommandsDir) {
   const errors = [];
 
-  if (!existsSync(SOURCE_AGENTS_DIR)) {
-    errors.push(`agents directory not found: ${SOURCE_AGENTS_DIR}`);
+  if (!existsSync(sourceAgentsDir)) {
+    errors.push(`agents directory not found: ${sourceAgentsDir}`);
   }
-  if (!existsSync(SOURCE_COMMANDS_DIR)) {
-    errors.push(`commands directory not found: ${SOURCE_COMMANDS_DIR}`);
+  if (!existsSync(sourceCommandsDir)) {
+    errors.push(`commands directory not found: ${sourceCommandsDir}`);
   }
 
   for (const agentFile of AGENTS) {
-    const p = path.join(SOURCE_AGENTS_DIR, agentFile);
+    const p = path.join(sourceAgentsDir, agentFile);
     if (!existsSync(p)) {
       errors.push(`agent file not found: ${agentFile}`);
     }
   }
 
   for (const cmd of COMMANDS) {
-    const p = path.join(SOURCE_COMMANDS_DIR, cmd);
+    const p = path.join(sourceCommandsDir, cmd);
     if (!existsSync(p)) {
       errors.push(`command file not found: ${cmd}`);
     }
@@ -124,27 +140,6 @@ function writeFileSafe(filePath, content) {
 }
 
 function copyCommand(src, dest, dryRun, force, ops) {
-  if (existsSync(dest) && !force) {
-    ops.push({ type: 'skip', reason: 'exists', file: path.relative(process.cwd(), dest) });
-    return;
-  }
-
-  const content = readFileSafe(src);
-  if (!content) {
-    ops.push({ type: 'error', reason: 'unreadable', file: path.relative(process.cwd(), src) });
-    return;
-  }
-
-  if (!dryRun) {
-    writeFileSafe(dest, content);
-  }
-  ops.push({ type: 'copy', file: path.relative(process.cwd(), dest) });
-}
-
-function installAgent(agentFile, targetDir, dryRun, force, ops) {
-  const src = path.join(SOURCE_AGENTS_DIR, agentFile);
-  const dest = path.join(targetDir, 'agents', agentFile);
-
   if (existsSync(dest) && !force) {
     ops.push({ type: 'skip', reason: 'exists', file: path.relative(process.cwd(), dest) });
     return;
@@ -192,7 +187,7 @@ function printSummary(ops, targetDir) {
   }
 }
 
-function main() {
+async function main() {
   const flags = parseArgs();
 
   if (flags.help) {
@@ -202,33 +197,83 @@ function main() {
 
   const mode = flags.global ? 'global' : 'local';
   const targetDir = getTargetDir(flags.global);
+  const projectType = await promptProjectType();
 
-  console.log(`  Research Based Agentic Framework installer\n`);
+  const sourceAgentsDir = path.join(REPO_ROOT, projectType, 'agents');
+  const sourceCommandsDir = path.join(REPO_ROOT, projectType, 'commands');
+
+  console.log(`\n  Agentic coding framework installer\n`);
   console.log(`  source: ${REPO_ROOT}`);
   console.log(`  mode: ${mode}`);
+  console.log(`  type: ${projectType}`);
 
-  const sourceErrors = validateSources();
-  if (sourceErrors.length > 0) {
+  const errors = validateSources(sourceAgentsDir, sourceCommandsDir);
+  if (errors.length > 0) {
     console.error(`\n  error: source validation failed:`);
-    for (const err of sourceErrors) {
+    for (const err of errors) {
       console.error(`    ${err}`);
     }
     process.exit(1);
   }
 
   const ops = [];
-
   const commandsDest = path.join(targetDir, 'commands');
   const agentsDest = path.join(targetDir, 'agents');
 
   for (const cmd of COMMANDS) {
-    const src = path.join(SOURCE_COMMANDS_DIR, cmd);
+    const src = path.join(sourceCommandsDir, cmd);
     const dest = path.join(commandsDest, cmd);
     copyCommand(src, dest, flags.dryRun, flags.force, ops);
   }
 
   for (const agentFile of AGENTS) {
-    installAgent(agentFile, targetDir, flags.dryRun, flags.force, ops);
+    const src = path.join(sourceAgentsDir, agentFile);
+    const dest = path.join(agentsDest, agentFile);
+    copyCommand(src, dest, flags.dryRun, flags.force, ops);
+  }
+
+  if (projectType === 'greenfield') {
+    console.log('\n  Creating project skeleton...');
+
+    // Create empty directories
+    const emptyDirs = [
+      '.planning/sprints',
+      '.planning/milestones',
+      '.planning/requirements',
+      '.docs/components',
+      '.docs/research',
+    ];
+    for (const dir of emptyDirs) {
+      const fullPath = path.join(process.cwd(), dir);
+      if (!existsSync(fullPath)) {
+        if (!flags.dryRun) {
+          mkdirSync(fullPath, { recursive: true });
+        }
+        ops.push({ type: 'create', file: dir + '/' });
+      }
+    }
+
+    // Copy template files to project root
+    const templatesDir = path.join(REPO_ROOT, 'greenfield', 'templates');
+    if (existsSync(templatesDir)) {
+      const templateFiles = readdirSync(templatesDir, { recursive: true });
+      for (const relativePath of templateFiles) {
+        const srcPath = path.join(templatesDir, relativePath);
+        if (!existsSync(srcPath)) continue;
+        if (!statSync(srcPath).isFile()) continue;
+
+        const destPath = path.join(process.cwd(), relativePath);
+        const destDir = path.dirname(destPath);
+
+        if (!existsSync(destDir)) {
+          mkdirSync(destDir, { recursive: true });
+        }
+
+        copyCommand(srcPath, destPath, flags.dryRun, flags.force, ops);
+      }
+    } else {
+      ops.push({ type: 'error', reason: 'templates directory not found', file: templatesDir });
+    }
   }
 
   printSummary(ops, targetDir);

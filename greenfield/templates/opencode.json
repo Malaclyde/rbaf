@@ -1,0 +1,87 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "default_agent": "team-lead",
+  "agent": {
+    "build": { "disable": true },
+    "plan": { "disable": true },
+    "team-lead": {
+      "model": "$POWERFUL_MODEL",
+      "prompt": "{file:.opencode/agents/TEAM_LEAD.md}"
+    },
+    "v-planner": {
+      "model": "$POWERFUL_MODEL",
+      "prompt": "{file:.opencode/agents/PLANNER.md}"
+    },
+    "v-researcher": {
+      "model": "$POWERFUL_MODEL",
+      "prompt": "{file:.opencode/agents/RESEARCHER.md}"
+    },
+    "v-ad-hoc": {
+      "model": "$MID_MODEL",
+      "prompt": "{file:.opencode/agents/AD-HOC.md}"
+    },
+    "v-designer": {
+      "model": "$MID_MODEL",
+      "prompt": "{file:.opencode/agents/DESIGNER.md}"
+    },
+    "planner": {
+      "model": "$POWERFUL_MODEL",
+      "prompt": "{file:.opencode/agents/PLANNER.md}",
+      "hidden": true,
+      "permission": { "task": "deny" }
+    },
+    "researcher": {
+      "model": "$POWERFUL_MODEL",
+      "prompt": "{file:.opencode/agents/RESEARCHER.md}",
+      "hidden": true
+    },
+    "implementation-spec": {
+      "model": "$MID_MODEL",
+      "prompt": "{file:.opencode/agents/IMPLEMENTATION_SPEC.md}",
+      "hidden": true,
+      "permission": { "task": "deny" }
+    },
+    "designer": {
+      "model": "$MID_MODEL",
+      "prompt": "{file:.opencode/agents/DESIGNER.md}",
+      "hidden": true,
+      "permission": { "task": "deny" }
+    },
+    "mid-coder": {
+      "model": "$MID_MODEL",
+      "prompt": "{file:.opencode/agents/CODER.md}",
+      "hidden": true,
+      "permission": { "task": "deny" }
+    },
+    "weak-coder": {
+      "model": "$WEAK_MODEL",
+      "prompt": "{file:.opencode/agents/CODER.md}",
+      "hidden": true,
+      "permission": { "task": "deny" }
+    },
+    "verifier": {
+      "model": "$POWERFUL_MODEL",
+      "prompt": "{file:.opencode/agents/VERIFIER.md}",
+      "hidden": true,
+      "permission": { "write": "deny", "edit": "deny", "task": "deny" }
+    },
+    "utility": {
+      "model": "$WEAK_MODEL",
+      "prompt": "{file:.opencode/agents/UTILITY.md}",
+      "hidden": true,
+      "permission": { "bash": "deny", "task": "deny" }
+    },
+    "git": {
+      "model": "$WEAK_MODEL",
+      "prompt": "{file:.opencode/agents/GIT.md}",
+      "hidden": true,
+      "permission": { "write": "deny", "edit": "deny", "task": "deny" }
+    },
+    "ad-hoc": {
+      "model": "$MID_MODEL",
+      "prompt": "{file:.opencode/agents/AD-HOC.md}",
+      "hidden": true,
+      "permission": { "task": "deny" }
+    }
+  }
+}

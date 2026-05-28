@@ -1,0 +1,11 @@
+{
+  "mode": "human-in-the-loop",
+  "verification": "auto",
+  "max_parallel_tasks": 5,
+  "git": {
+    "remote_configured": false,
+    "gh_cli_available": false,
+    "main_protected": true,
+    "use_pr": true
+  }
+}

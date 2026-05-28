@@ -1,6 +1,6 @@
 # Research Based Agentic Framework (RBAF)
 
-A behavioral framework for OpenCode that defines how AI agents research, plan, implement, verify, and maintain software projects through a structured agent hierarchy and development lifecycle.
+A behavioral framework for OpenCode that defines how AI agents research, plan, implement, verify, and maintain software projects. Supports two modes: **brownfield** for existing codebases where agents discover conventions dynamically, and **greenfield** for new projects where agents know the exact structure upfront.
 
 ## Installation
 
@@ -12,7 +12,7 @@ npx -y github:Malaclyde/rbaf
 npx -y github:Malaclyde/rbaf --global
 ```
 
-Installs 11 agent definitions and 3 slash commands into your OpenCode configuration. Safe to re-run -- existing files are not overwritten unless `--force` is passed.
+Installs 11 agent definitions and 5 slash commands into your OpenCode configuration. During installation, it prompts interactively for brownfield (existing codebase) or greenfield (new project) mode. Safe to re-run -- existing files are not overwritten unless `--force` is passed.
 
 ## What You Get
 
@@ -24,11 +24,11 @@ Installs 11 agent definitions and 3 slash commands into your OpenCode configurat
 | `PLANNER` | subagent | Creates plans, defines requirements, organizes work into sprints |
 | `RESEARCHER` | subagent | Deep research, project initialization, debugging, technical discussions |
 | `IMPLEMENTATION_SPEC` | subagent | Writes detailed implementation specifications from sprint plans |
-| `MID-CODER` | subagent | Implements complex tasks from specifications with tests |
-| `WEAK-CODER` | subagent | Implements simple, well-defined tasks from specifications |
+| `CODER` | subagent | Implements tasks from specifications with tests (replaces MID-CODER + WEAK-CODER) |
 | `VERIFIER` | subagent | Independent verification and code review against specifications |
 | `DESIGNER` | subagent | Creates UI design specifications (Google DESIGN.md format) |
 | `GIT` | subagent | Git operations -- worktrees, commits, branches, pull requests |
+| `V-*` | variant | User-facing agent variants (e.g. V-CODER, V-RESEARCHER) for direct interactive access |
 | `AD-HOC` | subagent | Generalist problem solver -- quick changes, bugfixes, unforeseen tasks |
 | `UTILITY` | subagent | Project maintenance -- planning files, documentation, changelogs |
 
@@ -39,6 +39,8 @@ Installs 11 agent definitions and 3 slash commands into your OpenCode configurat
 | `/init` | researcher | Initialize project structure and agent configuration |
 | `/plan` | planner | Create next sprint or phase with task breakdown |
 | `/discuss` | researcher | Research and discuss a design decision |
+| `/research` | researcher | Conduct deep research on a specific topic |
+| `/design` | designer | Create a design specification (Google DESIGN.md format) |
 
 ## How It Works
 
@@ -48,7 +50,27 @@ The framework defines a complete software development lifecycle managed by AI ag
 Uninitialized
     │ run /init
     ▼
-Initialized project
+┌─────────────────────────────────────────────┐
+│          /init prompts for mode              │
+│  Brownfield (existing)  or  Greenfield (new) │
+└─────────────────┬───────────────────────────┘
+                  │
+                  ▼
+    ┌─────────────────────────────┐
+    │ Brownfield: Researcher      │
+    │ discovers conventions from  │
+    │ existing codebase, docs,    │
+    │ git history                 │
+    └─────────────┬───────────────┘
+                  │
+    ┌─────────────────────────────┐
+    │ Greenfield: Agent knows     │
+    │ the exact project structure │
+    │ upfront, no discovery phase │
+    └─────────────┬───────────────┘
+                  │
+                  ▼
+    Initialized project
     │ run /plan
     ▼
 Planning phase ─── Planner creates sprints with phases of tasks
@@ -56,8 +78,8 @@ Planning phase ─── Planner creates sprints with phases of tasks
     ▼
 Task execution ─── Team Lead orchestrates:
     │   1. Implementation Spec → detailed spec from task
-    │   2. Coder (mid or weak) → implement on branch
-    │   3. Verifier (if strict) or coder (if auto) → verify
+    │   2. CODER → implement on branch
+    │   3. Verifier (if strict) or CODER (if auto) → verify
     │   4. Utility → update docs and status
     │   5. Git → commit, merge, clean up branch
     │

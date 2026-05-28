@@ -1,7 +1,4 @@
 ---
-name: mid-coder
-description: Implements complex tasks from specifications with tests and verification
-mode: subagent
 ---
 
 # identity

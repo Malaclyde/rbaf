@@ -819,14 +819,33 @@ If `opencode.json` already exists (pre-existing config): merge agent section int
 ```json
 {
   "$schema": "https://opencode.ai/config.json",
+  "default_agent": "team-lead",
   "agent": {
+    "build": {
+      "disable": true
+    },
+    "plan": {
+      "disable": true
+    },
     "team-lead": {
       "model": "$POWERFUL_MODEL",
       "prompt": "{file:.opencode/agents/TEAM_LEAD.md}"
     },
-    "researcher": {
+    "v-planner": {
+      "model": "$POWERFUL_MODEL",
+      "prompt": "{file:.opencode/agents/PLANNER.md}"
+    },
+    "v-researcher": {
       "model": "$POWERFUL_MODEL",
       "prompt": "{file:.opencode/agents/RESEARCHER.md}"
+    },
+    "v-ad-hoc": {
+      "model": "$MID_MODEL",
+      "prompt": "{file:.opencode/agents/AD-HOC.md}"
+    },
+    "v-designer": {
+      "model": "$MID_MODEL",
+      "prompt": "{file:.opencode/agents/DESIGNER.md}"
     },
     "planner": {
       "model": "$POWERFUL_MODEL",
@@ -836,6 +855,11 @@ If `opencode.json` already exists (pre-existing config): merge agent section int
         "task": "deny"
       }
     },
+    "researcher": {
+      "model": "$POWERFUL_MODEL",
+      "prompt": "{file:.opencode/agents/RESEARCHER.md}",
+      "hidden": true
+    },
     "implementation-spec": {
       "model": "$MID_MODEL",
       "prompt": "{file:.opencode/agents/IMPLEMENTATION_SPEC.md}",
@@ -844,9 +868,18 @@ If `opencode.json` already exists (pre-existing config): merge agent section int
         "task": "deny"
       }
     },
+    "designer": {
+      "model": "$MID_MODEL",
+      "prompt": "{file:.opencode/agents/DESIGNER.md}",
+      "hidden": true,
+      "permission": {
+        "bash": "deny",
+        "task": "deny"
+      }
+    },
     "mid-coder": {
       "model": "$MID_MODEL",
-      "prompt": "{file:.opencode/agents/MID-CODER.md}",
+      "prompt": "{file:.opencode/agents/CODER.md}",
       "hidden": true,
       "permission": {
         "task": "deny"
@@ -854,7 +887,7 @@ If `opencode.json` already exists (pre-existing config): merge agent section int
     },
     "weak-coder": {
       "model": "$WEAK_MODEL",
-      "prompt": "{file:.opencode/agents/WEAK-CODER.md}",
+      "prompt": "{file:.opencode/agents/CODER.md}",
       "hidden": true,
       "permission": {
         "task": "deny"
@@ -889,15 +922,6 @@ If `opencode.json` already exists (pre-existing config): merge agent section int
         "task": "deny"
       }
     },
-    "designer": {
-      "model": "$MID_MODEL",
-      "prompt": "{file:.opencode/agents/DESIGNER.md}",
-      "hidden": true,
-      "permission": {
-        "bash": "deny",
-        "task": "deny"
-      }
-    },
     "ad-hoc": {
       "model": "$MID_MODEL",
       "prompt": "{file:.opencode/agents/AD-HOC.md}",
@@ -909,9 +933,11 @@ If `opencode.json` already exists (pre-existing config): merge agent section int
 
 ## finalize
 
-Tell the user:
+Tell user to restart OpenCode:
 
 ```
-OpenCode configuration has been created/updated at opencode.json.
-Please restart OpenCode for the changes to take effect.
+OpenCode configuration has been created at opencode.json.
+
+IMPORTANT: You must restart OpenCode for these changes to take effect.
+Press Ctrl+C, then reopen OpenCode.
 ```

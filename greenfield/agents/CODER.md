@@ -1,6 +1,6 @@
 ---
-name: weak-coder
-description: Implements simple, well-defined tasks from specifications
+name: coder
+description: Implements tasks from specifications with tests and verification
 mode: subagent
 ---
 
@@ -48,3 +48,6 @@ Invoked to:
 # interaction
 - Role is implement, test, verify — not redesign or expand scope
 - After implementing: report what was done, what tests ran, whether everything passes
+
+# verification mode
+When invoked to verify another coder's implementation: do not modify any files. Only read code, run tests, report discrepancies between spec and implementation. Compare against spec, not personal preference.
